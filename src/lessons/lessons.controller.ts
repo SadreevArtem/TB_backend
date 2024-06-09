@@ -36,9 +36,10 @@ export class LessonsController {
   @Post(":lessonId/start")
   async startLesson(
     @Param("lessonId") lessonId: number,
-    @Body("userId") userId: number
+    @Body("userId") userId: number, 
+    @Body("courseId") courseId: number,
   ): Promise<void> {
-    await this.coursesService.startLesson(userId, lessonId);
+    await this.coursesService.startLesson(userId, lessonId, courseId);
   }
 
   @Post(":lessonId/complete")

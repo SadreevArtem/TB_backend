@@ -63,12 +63,14 @@ export class UsersController {
         about: true,
         avatar: true,
         courseProgress: true,
+        lessonProgress: true,
         createdAt: true,
         updatedAt: true,
       },
       where: { username },
       relations: {
-        courseProgress: true
+        courseProgress: true,
+        lessonProgress: true
       }
     });
     return user;

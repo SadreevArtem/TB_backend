@@ -51,7 +51,7 @@ export class UsersService {
   }
 
   findById(id: number) {
-    return this.userRepository.findOne({ where:{id}, relations: {courseProgress: true} });
+    return this.userRepository.findOne({ where:{id}, relations: {courseProgress: true, lessonProgress: true} });
   }
 
   searchUsers(query: string) {

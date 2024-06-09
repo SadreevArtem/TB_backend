@@ -52,7 +52,7 @@ export class CoursesService {
   async startCourse(userId: number, courseId: number): Promise<void> {
     const course = await this.courseRepository.findOneBy({id: courseId});
     const user = await this.usersService.findById(userId);
-    await this.userCourseProgressRepository.save({
+     await this.userCourseProgressRepository.save({
       user,
       course,
       status: 'in_progress',
@@ -61,17 +61,26 @@ export class CoursesService {
     });
   }
 
-  async startLesson(userId: number, lessonId: number): Promise<void> {
+  async startLesson(userId: number, lessonId: number, courseId: number): Promise<any> {
+    const user = await this.usersService.findById(userId);
+    const course = await this.courseRepository.findOneBy({id: courseId});
+    const lesson = await this.lessonRepository.findOne({
+      where: { id: lessonId },
+    });
     await this.userLessonProgressRepository.save({
-      user: { id: userId },
-      lesson: { id: lessonId },
+      user,
+      lesson,
+      course,
       status: 'in_progress',
       startedAt: new Date(),
       updatedAt: new Date(),
     });
+    return {
+      startLesson: lessonId
+    }
   }
 
-  async completeLesson(userId: number, lessonId: number): Promise<void> {
+  async completeLesson(userId: number, lessonId: number): Promise<any> {
     await this.userLessonProgressRepository.update({ user: { id: userId }, lesson: { id: lessonId } }, {
       status: 'completed',
       completedAt: new Date(),
@@ -88,13 +97,18 @@ export class CoursesService {
       where: { course: { id: courseId } },
     });
     const completedLessons = await this.userLessonProgressRepository.count({ where: {user: {id: userId}, status: 'completed', lesson: {course: {id:courseId}}} });
+    const completeCorse = totalLessons === completedLessons
 
-    if (totalLessons === completedLessons) {
+    if (completeCorse) {
       await this.userCourseProgressRepository.update({ user: { id: userId }, course: { id: courseId } }, {
         status: 'completed',
         completedAt: new Date(),
         updatedAt: new Date(),
       });
+    }
+    return {
+      completeLesson: lessonId,
+      completeCorse
     }
   }
 }
