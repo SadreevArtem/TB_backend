@@ -45,7 +45,7 @@ export class LessonsController {
   @Post(":lessonId/complete")
   async completeLesson(
     @Param("lessonId") lessonId: number,
-    @Body("userId") userId: number
+    @Body("userId") userId: number,
   ): Promise<void> {
     await this.coursesService.completeLesson(userId, lessonId);
   }

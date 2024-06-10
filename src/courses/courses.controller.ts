@@ -1,7 +1,10 @@
-import { Controller, Post, Param, Body, Get, Put, Delete } from '@nestjs/common';
+import { Controller, Post, Param, Body, Get, Put, Delete, UseGuards } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { User } from 'src/users/entities/user.entity';
+import { AuthUser } from 'src/common/decorators/user.decorator';
+import { JwtGuard } from 'src/guard/jwt.guard';
 
 
 @Controller('courses')
@@ -15,6 +18,12 @@ export class CoursesController {
   @Get()
   async findAll() {
     return this.coursesService.findAllCourses();
+  }
+
+  @UseGuards(JwtGuard)
+  @Get(':courseId/lessons-status')
+  async getStatusLessons(@AuthUser() user: User, @Param('courseId') courseId: number){
+    return this.coursesService.lessonsProgress(user.id, courseId)
   }
 
   @Get(':id')

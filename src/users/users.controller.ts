@@ -44,10 +44,14 @@ export class UsersController {
         id: true,
         avatar: true,
         about: true,
+        courseProgress: true,
         createdAt: true,
         updatedAt: true,
       },
       where: { id: user.id },
+      relations: {
+        courseProgress: true,
+      }
     });
   }
 

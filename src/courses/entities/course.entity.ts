@@ -1,7 +1,6 @@
 import { IsUrl, Length } from 'class-validator';
 import { Lesson } from 'src/lessons/entities/lesson.entity';
 import { UserCourseProgress } from 'src/progress/entities/progress.entity';
-import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,

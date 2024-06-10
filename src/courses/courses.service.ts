@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Lesson } from 'src/lessons/entities/lesson.entity';
 import { UserCourseProgress } from 'src/progress/entities/progress.entity';
 import { UserLessonProgress } from 'src/user-lesson-progress/entities/user-lesson-progress.entity';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { Course } from './entities/course.entity';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -30,8 +30,8 @@ export class CoursesService {
     return this.courseRepository.save(course);
   }
 
-  async findAllCourses(): Promise<Course[]> {
-    return this.courseRepository.find();
+  async findAllCourses(query?: FindOneOptions<Course>): Promise<Course[]> {
+    return this.courseRepository.find(query);
   }
 
   async updateCourse(id: number, updateCourseDto: UpdateCourseDto): Promise<Course> {
@@ -80,6 +80,17 @@ export class CoursesService {
     }
   }
 
+  async lessonsProgress(userId: number, courseId){
+    const lessons = await this.userLessonProgressRepository.find({
+      select: {lesson: {id: true}},
+      where: { user: { id: userId }, lesson: { course: { id: courseId } } },
+      relations: {
+        lesson: true
+      }
+    });
+    return lessons;
+  }
+
   async completeLesson(userId: number, lessonId: number): Promise<any> {
     await this.userLessonProgressRepository.update({ user: { id: userId }, lesson: { id: lessonId } }, {
       status: 'completed',
@@ -97,9 +108,9 @@ export class CoursesService {
       where: { course: { id: courseId } },
     });
     const completedLessons = await this.userLessonProgressRepository.count({ where: {user: {id: userId}, status: 'completed', lesson: {course: {id:courseId}}} });
-    const completeCorse = totalLessons === completedLessons
+    const completeCourse = totalLessons === completedLessons
 
-    if (completeCorse) {
+    if (completeCourse) {
       await this.userCourseProgressRepository.update({ user: { id: userId }, course: { id: courseId } }, {
         status: 'completed',
         completedAt: new Date(),
@@ -108,7 +119,7 @@ export class CoursesService {
     }
     return {
       completeLesson: lessonId,
-      completeCorse
+      completeCourse
     }
   }
 }

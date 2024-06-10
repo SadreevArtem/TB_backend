@@ -69,8 +69,8 @@ export class UsersService {
     return this.userRepository.update({ id }, updateUserDto);
   }
   remove(id: number, user) {
-    if (id !== user.id) {
-      throw new ForbiddenException('Запрещено');
+    if (user.id !== 1) {
+      throw new ForbiddenException("Запрещено");
     }
     return this.userRepository.delete({ id });
   }
